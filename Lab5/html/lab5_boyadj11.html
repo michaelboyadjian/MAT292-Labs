@@ -1,0 +1,578 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Second-Order Lab: Second-Order Linear DEs in MATLAB</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-11-21"><meta name="DC.source" content="lab5_boyadj11.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Second-Order Lab: Second-Order Linear DEs in MATLAB</h1><!--introduction--><p>In this lab, you will learn how to use <tt>iode</tt> to plot solutions of second-order ODEs. You will also learn to classify the behaviour of different types of solutions.</p><p>Moreover, you will write your own Second-Order ODE system solver, and compare its results to those of <tt>iode</tt>.</p><p>Opening the m-file lab5.m in the MATLAB editor, step through each part using cell mode to see the results.  Compare the output with the PDF, which was generated from this m-file.</p><p>There are seven (7) exercises in this lab that are to be handed in on the due date of the lab. Write your solutions in the template, including appropriate descriptions in each step. Save the m-files and submit them on Quercus.</p><p>MAT292, Fall 2019, Stinchcombe &amp; Parsch, modified from MAT292, Fall 2018, Stinchcombe &amp; Khovanskii, modified from MAT292, Fall 2017, Stinchcombe &amp; Sinnamon, modified from MAT292, Fall 2015, Sousa, based on Spring 2010, Jerrard</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Student Information</a></li><li><a href="#2">Iode for Second-Order Linear DEs with constant coefficients</a></li><li><a href="#3">Growth and Decay Concepts</a></li><li><a href="#4">Example</a></li><li><a href="#5">Exercise 1</a></li><li><a href="#6">Exercise 2</a></li><li><a href="#7">Exercise 3</a></li><li><a href="#8">Example</a></li><li><a href="#9">Exercise 4</a></li><li><a href="#10">Exercise 5</a></li><li><a href="#11">Numerical Methods for Second-Order ODEs</a></li><li><a href="#12">Exercise 6</a></li><li><a href="#13">Exercise 7</a></li></ul></div><h2 id="1">Student Information</h2><pre>Student Name: Michael Boyadjian</pre><pre>Student Number: 10051009142</pre><h2 id="2">Iode for Second-Order Linear DEs with constant coefficients</h2><p>In the <tt>iode</tt> menu, select the <tt>Second order linear ODEs</tt> module. It opens with a default DE and a default forcing function <tt>f(t) = cos(2t)</tt>. The forcing function can be plotted along with the solution by choosing <tt>Show forcing function</tt> from the <tt>Options</tt> menu.</p><p>Use this module to easily plot solutions to these kind of equations.</p><p>There are three methods to input the initial conditions:</p><p>Method 1. Enter the values for <tt>t0</tt>, <tt>x(t0)</tt>, and <tt>x'(t0)</tt> into the <tt>Initial conditions</tt> boxes, and then click <tt>Plot solution</tt>.</p><p>Method 2. Enter the desired slope <tt>x'(t0)</tt> into the appropriate into the <tt>Initial conditions</tt> box, and then click on the graph at the point <tt>(t0,x(t0))</tt> where you want the solution to start.</p><p>Method 3. Press down the left mouse button at the desired point <tt>(t0,x(t0))</tt> and drag the mouse a short distance at the desired slope <tt>x'(t0)</tt>. When you release the mouse button, <tt>iode</tt> will plot the solution.</p><h2 id="3">Growth and Decay Concepts</h2><p>We want to classify different kinds of behaviour of the solutions. We say that a solution:</p><p><tt>grows</tt> if its magnitude tends to <tt>infinity</tt> for large values of <tt>t</tt>, that is, if either the solution tends to <img src="lab5_boyadj11_eq04479108148780867440.png" alt="$+\infty$"> or <img src="lab5_boyadj11_eq02509542637412244253.png" alt="$-\infty$">,</p><p><tt>decays</tt> if its magnitude converges to <tt>0</tt> for large values of <tt>t</tt>,</p><p><tt>decays while oscillating</tt> if it keeps changing sign for large values of <tt>t</tt> and the amplitude of the oscillation tends to zero,</p><p><tt>grows while oscillating</tt> if it keeps changing sign for large values of <tt>t</tt> and the amplitude of the oscillation tends to infinity.</p><h2 id="4">Example</h2><pre class="codeinput">t = 0:0.1:10;
+
+<span class="comment">% Example 1</span>
+figure();
+y1 = exp(t);
+plot(t,y1)
+
+<span class="comment">% Annotate the figure</span>
+xlabel(<span class="string">'t'</span>);
+ylabel(<span class="string">'f_1(t)'</span>);
+title(<span class="string">'The function e^t grows'</span>);
+legend(<span class="string">'f_1(t)=e^t'</span>);
+
+
+<span class="comment">% Example 2</span>
+figure();
+y2 = -exp(t);
+plot(t,y2)
+
+<span class="comment">% Annotate the figure</span>
+xlabel(<span class="string">'t'</span>);
+ylabel(<span class="string">'f_2(t)'</span>);
+title(<span class="string">'The function -e^{-t} decays'</span>);
+legend(<span class="string">'f_2(t)=-e^{t}'</span>);
+
+
+<span class="comment">% Example 3</span>
+figure();
+y3 = exp(-t);
+plot(t,y3)
+
+<span class="comment">% Annotate the figure</span>
+xlabel(<span class="string">'t'</span>);
+ylabel(<span class="string">'f_3(t)'</span>);
+title(<span class="string">'The function e^{-t} decays'</span>);
+legend(<span class="string">'f_3(t)=e^{-t}'</span>);
+
+
+
+<span class="comment">% Example 4</span>
+figure();
+y4 = exp(-t).*cos(t);
+plot(t,y4)
+
+<span class="comment">% Annotate the figure</span>
+xlabel(<span class="string">'t'</span>);
+ylabel(<span class="string">'f_4(t)'</span>);
+title(<span class="string">'The function e^{-t}cos(t) decays while oscillating'</span>);
+legend(<span class="string">'f_4(t)=e^{-t}*cos(t)'</span>);
+
+
+
+<span class="comment">% Example 5</span>
+figure();
+y5 = exp(t).*sin(2*t);
+plot(t,y5)
+
+<span class="comment">% Annotate the figure</span>
+xlabel(<span class="string">'t'</span>);
+ylabel(<span class="string">'f_5(t)'</span>);
+title(<span class="string">'The function e^{t}sin(2t) grows while oscillating'</span>);
+legend(<span class="string">'f_5(t)=e^{t}sin(2t)'</span>);
+
+
+<span class="comment">% Example 6</span>
+figure();
+y6 = sin(3*t);
+plot(t,y6)
+
+<span class="comment">% Annotate the figure</span>
+xlabel(<span class="string">'t'</span>);
+ylabel(<span class="string">'f_6(t)'</span>);
+title(<span class="string">'The function sin(3t) neither decays nor grows, it just oscillates'</span>);
+legend(<span class="string">'f_6(t)=sin(3t)'</span>);
+
+
+
+<span class="comment">% |Remark.| A function which |grows while oscillating| doesn't |grow|,</span>
+<span class="comment">% because it keeps changing sign, so it neither tends to $+\infty$ nor to</span>
+<span class="comment">% $-\infty$.</span>
+</pre><img vspace="5" hspace="5" src="lab5_boyadj11_01.png" alt=""> <img vspace="5" hspace="5" src="lab5_boyadj11_02.png" alt=""> <img vspace="5" hspace="5" src="lab5_boyadj11_03.png" alt=""> <img vspace="5" hspace="5" src="lab5_boyadj11_04.png" alt=""> <img vspace="5" hspace="5" src="lab5_boyadj11_05.png" alt=""> <img vspace="5" hspace="5" src="lab5_boyadj11_06.png" alt=""> <h2 id="5">Exercise 1</h2><p>Objective: Use <tt>iode</tt> to solve second-order linear DEs. And classify them.</p><p>Details: Consider the ODE:</p><pre>4y'' + 4 y' + 17 y = 0</pre><p>(a) Use <tt>iode</tt> to plot six (6) numerical solutions of this equation with "random" initial data (use Method 3 above) and press-and-drag at various initial points, with some of the slopes being positive and some negative)</p><p>Use only initial points in the part of the window where <tt>0&lt;t&lt;1</tt> and <tt>-1&lt;x&lt;1</tt> and take all initial slopes between <tt>-3</tt> and <tt>+3</tt>.</p><p>Change the window to <tt>[0,10]x[-3,3]</tt>. Save a cropped screenshot with the filename ex1_&lt;UTORid&gt;.png Changing "UTORid" below will result in the image being included when you "Publish".</p><p><img vspace="5" hspace="5" src="ex1_boyadj11.png" alt=""> </p><p>(b) Based on the results of (a), state what percentage of solutions decay, grow, grow while oscillating, or decay while oscillating.</p><p>As seen in the graphic, all of the solutions (100%) decay while oscillating.</p><p>(c) Solve the DE and write the exact solution. Explain why this justifies your answer in (b).</p><p>The exact solution is y=(e^(-t/2))*(c1*cos(2t)+c2*sin(2t)). We can see that the solution decays while oscillating as the e^(-t/2) term tends to 0 as t approaches infinity and c1*cos(2t)+c2*sin(2t) oscillates for all t</p><h2 id="6">Exercise 2</h2><p>Consider the ODE:</p><pre>y'' + sqrt(3) y' - y/4 = 0</pre><p>Repeat (a), (b), (c) from Exercise 1 with this DE.</p><p>a)</p><p><img vspace="5" hspace="5" src="ex2_boyadj11.png" alt=""> </p><p>b) All solutions (100%) grow (no oscillation)</p><p>c) The exact solution is  y= c1*e^(((-sqrt(3)+2)/2)t)+c2*e^c1*e^(((-sqrt(3)-2)/2)t). This is justified as the solution will grow for all t, since the power of the exponential terms will always be positive. No oscillation occurs as the solution does not contain any periodic function terms</p><h2 id="7">Exercise 3</h2><p>Consider the ODE:</p><pre>y'' + sqrt(3) y' + y/4 = 0</pre><p>Repeat (a), (b), (c) from Exercise 1 with this DE.</p><p>a)</p><p><img vspace="5" hspace="5" src="ex3_boyadj11.png" alt=""> </p><p>b) All solutions (100%) decay wihtout oscillation</p><p>c) The exact solution is y = c1*e^((-sqrt(3) + sqrt(2))t/2) + c2*e^((-sqrt(3) - sqrt(2))t/2)   There will be no oscillation as there are no periodic terms and the   solution is always decaying as the exponential terms are negative</p><h2 id="8">Example</h2><p>Consider the ODE:</p><pre>y'' + 2y' + 10y = 0</pre><p>The solution is</p><pre>y(t) = e^(-t) ( c1 cos(3t) + c2 sin(3t) )</pre><p>From this, it is easy to see that all solutions decay while oscillating.</p><p>Similarly, for the equation</p><pre>y'' - 2y' + 10y = 0</pre><p>The solution is</p><pre>y(t) = e^t ( c3 cos(3t) + c4 sin(3t) )</pre><p>which grows while oscillating.</p><h2 id="9">Exercise 4</h2><p>Consider the fourth-order ODE:</p><pre>y'''' + 2 y''' + 6 y'' + 2 y' + 5 y = 0</pre><p>(a) Find the general solution for this problem. You can use MATLAB to find the roots of the characteristic equation numerically with <tt>roots</tt> or symbolically with <tt>solve</tt>.</p><p>(b) Predict what percentage of solutions with random initial data will grow, decay, grow while oscillating, and decay while oscillating. Explain.</p><pre class="codeinput"><span class="comment">% Below are the roots of the characteristic equation, which give us the</span>
+<span class="comment">% eigenvalues:</span>
+
+<span class="comment">% -1.0000 + 2.0000i</span>
+<span class="comment">% -1.0000 - 2.0000i</span>
+<span class="comment">% -0.0000 + 1.0000i</span>
+<span class="comment">% -0.0000 - 1.0000i</span>
+
+<span class="comment">% From the signs, we see that 50% are decaying while oscillating (negative</span>
+<span class="comment">% real component) and the other 50% are oscillating forever (real component</span>
+<span class="comment">% is 0)</span>
+</pre><h2 id="10">Exercise 5</h2><p>Objective: Classify equations given the roots of the characteristic equation.</p><p>Details: Your answer can consist of just a short sentence, as <tt>grows</tt> or <tt>decays while oscillating</tt>.</p><p>Consider a second-order linear constant coefficient homogeneous DE with <tt>r1</tt> and <tt>r2</tt> as roots of the characteristic equation.</p><p>Summarize your conclusions about the behaviour of solutions for randomly chosen initial data when.</p><p>(a) <tt>0 &lt; r1 &lt; r2</tt></p><p>(b) <tt>r1 &lt; 0 &lt; r2</tt></p><p>(c) <tt>r1 &lt; r2 &lt; 0</tt></p><p>(d) <tt>r1 = alpha + beta i</tt> and  <tt>r2 = alpha - beta i</tt> and <tt>alpha &lt; 0</tt></p><p>(e) <tt>r1 = alpha + beta i</tt> and  <tt>r2 = alpha - beta i</tt> and <tt>alpha = 0</tt></p><p>(f) <tt>r1 = alpha + beta i</tt> and  <tt>r2 = alpha - beta i</tt> and <tt>alpha &gt; 0</tt></p><p>a. Grows b. Saddle c. Decays d. Decays while oscillating e. Centre (oscillating) - Does not grow or decay f. Grows while oscillating</p><h2 id="11">Numerical Methods for Second-Order ODEs</h2><p>One way to create a numerical method for second-order ODEs is to approximate derivatives with finite differences in the same way of the Euler method.</p><p>This means that we approximate the first derivative by:</p><pre>y'(t[n]) ~ ( y[n] - y[n-1] ) / h</pre><p>and</p><pre>y''(t[n])  ~ ( y'(t[n+1]) - y'(t[n]) ) / h ~ ( y[n+1] - 2 y[n] + y[n-1]
+) / ( h^2 )</pre><p>By writing these approximations into the ODE, we obtain a method to get <tt>y[n+1]</tt> from the previous two steps <tt>y[n]</tt> and <tt>y[n-1]</tt>.</p><p>The method for approximating solutions is:</p><p>1. Start with <tt>y[0]=y0</tt></p><p>2. Then we need to get <tt>y[1]</tt>, but we can't use the method, because we don't have two iterations <tt>y[0]</tt> and <tt>y[-1]</tt>(!!). So we use Euler to get</p><pre>y[1] = y0 + y1 h</pre><p>y1 is the slope given by the initial condition</p><p>3. Use the method described above to get <tt>y[n]</tt> for <tt>n=2,3,...</tt>.</p><h2 id="12">Exercise 6</h2><p>Objective: Write your own second-order ODE solver.</p><p>Details: Consider the second-order ODE</p><pre>y'' + p(t) y' + q(t) y = g(t)</pre><p>Write a second-order ODE solver using the method described above.</p><p>This m-file should be a function which accepts as variables (t0,tN,y0,y1,h), where t0 and tN are the start and end points of the interval on which to solve the ODE, y0, y1 are the initial conditions of the ODE, and h is the stepsize.  You may also want to pass the functions into the ODE the way <tt>ode45</tt> does (check MATLAB lab 2). Name the function DE2_&lt;UTORid&gt;.m.</p><p>Note: you will need to use a loop to do this exercise.</p><h2 id="13">Exercise 7</h2><p>Objective: Compare your method with <tt>iode</tt></p><p>Details: Use <tt>iode</tt> to plot the solution of the ODE <tt>y'' + exp(-t/5) y' + (1-exp(-t/5)) y = sin(2*t)</tt> with the initial conditions <tt>y(0)  = 1, y'(0) = 0</tt></p><p>Use the window to <tt>[0,20]x[-2,2]</tt> Without removing the figure window, plot your solution (in a different colour), which will be plotted in the same graph.</p><p>Comment on any major differences, or the lack thereof.</p><p><img vspace="5" hspace="5" src="ex7_boyadj11.png" alt=""> </p><pre class="codeinput"><span class="comment">% Below is the code used to plot the DE2 solver on the iode graph. This was</span>
+<span class="comment">% entered in the command window to plot on the same graph</span>
+
+<span class="comment">% inline function</span>
+f = @(t, y, dy) - exp(-t/5)*dy - (1-exp(-t/5))*y + sin(2*t);
+
+<span class="comment">% numerical solution using DE2_boyadj11 solver</span>
+[t, y] = DE2_boyadj11(f, 0, 20, 1, 0, 0.01);
+
+<span class="comment">% plotting on iode plot</span>
+plot(t, y);
+title(<span class="string">'Exercise 7'</span>);
+xlabel(<span class="string">'t'</span>);
+ylabel(<span class="string">'y'</span>);
+legend(<span class="string">'Numerical Solution Using DE2 boyadj11'</span>, <span class="string">'location'</span>, <span class="string">'best'</span>);
+
+<span class="comment">% The DE2 solver is nearly identical to the iode solver except that</span>
+<span class="comment">% it is a little shifted to the right</span>
+<span class="comment">%</span>
+<!--
+##### SOURCE BEGIN #####
+%% Second-Order Lab: Second-Order Linear DEs in MATLAB
+%
+%
+% In this lab, you will learn how to use |iode| to plot solutions of 
+% second-order ODEs. You will also learn to classify the behaviour of 
+% different types of solutions.
+%
+% Moreover, you will write your own Second-Order ODE system solver, and 
+% compare its results to those of |iode|.
+%
+% Opening the m-file lab5.m in the MATLAB editor, step through each
+% part using cell mode to see the results.  Compare the output with the
+% PDF, which was generated from this m-file.
+%
+% There are seven (7) exercises in this lab that are to be handed in on the
+% due date of the lab. Write your solutions in the template, including
+% appropriate descriptions in each step. Save the m-files and submit them 
+% on Quercus.
+%
+% MAT292, Fall 2019, Stinchcombe & Parsch, modified from
+% MAT292, Fall 2018, Stinchcombe & Khovanskii, modified from
+% MAT292, Fall 2017, Stinchcombe & Sinnamon, modified from
+% MAT292, Fall 2015, Sousa, based on
+% Spring 2010, Jerrard
+
+
+%% Student Information
+%
+%  Student Name: Michael Boyadjian
+%
+%  Student Number: 10051009142
+%
+
+%% Iode for Second-Order Linear DEs with constant coefficients
+% 
+% In the |iode| menu, select the |Second order linear ODEs| module.
+% It opens with a default DE and a default forcing function |f(t) =
+% cos(2t)|. The forcing function can be plotted along with the solution by
+% choosing |Show forcing function| from the |Options| menu.
+%
+% Use this module to easily plot solutions to these kind of equations.
+%
+% There are three methods to input the initial conditions:
+%
+% Method 1. Enter the values for |t0|, |x(t0)|, and |x'(t0)| into the
+% |Initial conditions| boxes, and then click |Plot solution|.
+%
+% Method 2. Enter the desired slope |x'(t0)| into the appropriate into the
+% |Initial conditions| box, and then click on the graph at the point
+% |(t0,x(t0))| where you want the solution to start.
+%
+% Method 3. Press down the left mouse button at the desired point
+% |(t0,x(t0))| and drag the mouse a short distance at the desired slope
+% |x'(t0)|. When you release the mouse button, |iode| will plot the
+% solution.
+
+%% Growth and Decay Concepts
+%
+% We want to classify different kinds of behaviour of the solutions. We say
+% that a solution:
+%
+% |grows| if its magnitude tends to |infinity| for large values of |t|, that
+% is, if either the solution tends to $+\infty$ or $-\infty$,
+%
+% |decays| if its magnitude converges to |0| for large values of |t|,
+%
+% |decays while oscillating| if it keeps changing sign for large values of
+% |t| and the amplitude of the oscillation tends to zero,
+%
+% |grows while oscillating| if it keeps changing sign for large values of
+% |t| and the amplitude of the oscillation tends to infinity.
+
+%% Example
+%
+t = 0:0.1:10;
+
+% Example 1
+figure();
+y1 = exp(t);
+plot(t,y1)
+
+% Annotate the figure
+xlabel('t');
+ylabel('f_1(t)');
+title('The function e^t grows');
+legend('f_1(t)=e^t');
+
+
+% Example 2
+figure();
+y2 = -exp(t);
+plot(t,y2)
+
+% Annotate the figure
+xlabel('t');
+ylabel('f_2(t)');
+title('The function -e^{-t} decays');
+legend('f_2(t)=-e^{t}');
+
+
+% Example 3
+figure();
+y3 = exp(-t);
+plot(t,y3)
+
+% Annotate the figure
+xlabel('t');
+ylabel('f_3(t)');
+title('The function e^{-t} decays');
+legend('f_3(t)=e^{-t}');
+
+
+
+% Example 4
+figure();
+y4 = exp(-t).*cos(t);
+plot(t,y4)
+
+% Annotate the figure
+xlabel('t');
+ylabel('f_4(t)');
+title('The function e^{-t}cos(t) decays while oscillating');
+legend('f_4(t)=e^{-t}*cos(t)');
+
+
+
+% Example 5
+figure();
+y5 = exp(t).*sin(2*t);
+plot(t,y5)
+
+% Annotate the figure
+xlabel('t');
+ylabel('f_5(t)');
+title('The function e^{t}sin(2t) grows while oscillating');
+legend('f_5(t)=e^{t}sin(2t)');
+
+
+% Example 6
+figure();
+y6 = sin(3*t);
+plot(t,y6)
+
+% Annotate the figure
+xlabel('t');
+ylabel('f_6(t)');
+title('The function sin(3t) neither decays nor grows, it just oscillates');
+legend('f_6(t)=sin(3t)');
+
+
+
+% |Remark.| A function which |grows while oscillating| doesn't |grow|,
+% because it keeps changing sign, so it neither tends to $+\infty$ nor to
+% $-\infty$.
+
+%% Exercise 1
+%
+% Objective: Use |iode| to solve second-order linear DEs. And classify
+% them.
+%
+% Details: Consider the ODE:
+%
+%  4y'' + 4 y' + 17 y = 0
+%
+% (a) Use |iode| to plot six (6) numerical solutions of this equation with
+% "random" initial data (use Method 3 above) and press-and-drag at various
+% initial points, with some of the slopes being positive and some negative)
+%
+% Use only initial points in the part of the window where |0<t<1| and
+% |-1<x<1| and take all initial slopes between |-3| and |+3|.
+%
+% Change the window to |[0,10]x[-3,3]|.
+% Save a cropped screenshot with the filename ex1_<UTORid>.png
+% Changing "UTORid" below will result in the image being included when you "Publish".
+% 
+% <<ex1_boyadj11.png>>
+%
+% (b) Based on the results of (a), state what percentage of solutions 
+% decay, grow, grow while oscillating, or decay while oscillating.
+%
+% As seen in the graphic, all of the solutions (100%) decay while
+% oscillating.
+%
+% (c) Solve the DE and write the exact solution. Explain why this justifies
+% your answer in (b).
+% 
+% The exact solution is y=(e^(-t/2))*(c1*cos(2t)+c2*sin(2t)). We can see
+% that the solution decays while oscillating as the e^(-t/2) term tends to
+% 0 as t approaches infinity and c1*cos(2t)+c2*sin(2t) oscillates for all t 
+%
+%% Exercise 2
+%
+% Consider the ODE:
+%
+%  y'' + sqrt(3) y' - y/4 = 0
+%
+% Repeat (a), (b), (c) from Exercise 1 with this DE.
+% 
+% a)
+% 
+% <<ex2_boyadj11.png>>
+%
+% b) All solutions (100%) grow (no oscillation)
+%
+% c) The exact solution is  y=
+% c1*e^(((-sqrt(3)+2)/2)t)+c2*e^c1*e^(((-sqrt(3)-2)/2)t). This is justified
+% as the solution will grow for all t, since the power of the exponential
+% terms will always be positive. No oscillation occurs as the solution does
+% not contain any periodic function terms
+%% Exercise 3
+%
+% Consider the ODE:
+%
+%  y'' + sqrt(3) y' + y/4 = 0
+%
+% Repeat (a), (b), (c) from Exercise 1 with this DE.
+% 
+% a)
+% 
+% <<ex3_boyadj11.png>>
+%
+% b) All solutions (100%) decay wihtout oscillation
+%
+% c) The exact solution is y = c1*e^((-sqrt(3) + sqrt(2))t/2) + c2*e^((-sqrt(3) - sqrt(2))t/2)
+%   There will be no oscillation as there are no periodic terms and the
+%   solution is always decaying as the exponential terms are negative 
+%
+%
+%% Example
+%
+% Consider the ODE:
+%
+%  y'' + 2y' + 10y = 0
+% 
+% The solution is
+%
+%  y(t) = e^(-t) ( c1 cos(3t) + c2 sin(3t) )
+%
+% From this, it is easy to see that all solutions decay while oscillating.
+%
+% Similarly, for the equation 
+%
+%  y'' - 2y' + 10y = 0
+% 
+% The solution is
+%
+%  y(t) = e^t ( c3 cos(3t) + c4 sin(3t) )
+%
+% which grows while oscillating.
+
+%% Exercise 4
+%
+% Consider the fourth-order ODE:
+%
+%  y'''' + 2 y''' + 6 y'' + 2 y' + 5 y = 0
+%
+% (a) Find the general solution for this problem. You can use MATLAB to 
+% find the roots of the characteristic equation numerically with |roots| or
+% symbolically with |solve|.
+%
+% (b) Predict what percentage of solutions with random initial data will 
+% grow, decay, grow while oscillating, and decay while oscillating. Explain.
+
+% Below are the roots of the characteristic equation, which give us the
+% eigenvalues:
+
+% -1.0000 + 2.0000i
+% -1.0000 - 2.0000i
+% -0.0000 + 1.0000i
+% -0.0000 - 1.0000i
+
+% From the signs, we see that 50% are decaying while oscillating (negative 
+% real component) and the other 50% are oscillating forever (real component
+% is 0)
+
+%% Exercise 5
+%
+% Objective: Classify equations given the roots of the characteristic
+% equation.
+%
+% Details: Your answer can consist of just a short sentence, as |grows| or 
+% |decays while oscillating|.
+%
+% Consider a second-order linear constant coefficient homogeneous DE with
+% |r1| and |r2| as roots of the characteristic equation.
+%
+% Summarize your conclusions about the behaviour of solutions for randomly
+% chosen initial data when.
+%
+% (a) |0 < r1 < r2|
+%
+% (b) |r1 < 0 < r2|
+%
+% (c) |r1 < r2 < 0|
+% 
+% (d) |r1 = alpha + beta i| and  |r2 = alpha - beta i| and |alpha < 0|
+% 
+% (e) |r1 = alpha + beta i| and  |r2 = alpha - beta i| and |alpha = 0|
+% 
+% (f) |r1 = alpha + beta i| and  |r2 = alpha - beta i| and |alpha > 0|
+%
+% a. Grows
+% b. Saddle
+% c. Decays
+% d. Decays while oscillating
+% e. Centre (oscillating) - Does not grow or decay
+% f. Grows while oscillating
+
+%% Numerical Methods for Second-Order ODEs
+%
+% One way to create a numerical method for second-order ODEs is to
+% approximate derivatives with finite differences in the same way of the
+% Euler method.
+%
+% This means that we approximate the first derivative by:
+%
+%  y'(t[n]) ~ ( y[n] - y[n-1] ) / h
+%
+% and
+%   
+%  y''(t[n])  ~ ( y'(t[n+1]) - y'(t[n]) ) / h ~ ( y[n+1] - 2 y[n] + y[n-1]
+%  ) / ( h^2 )
+%
+% By writing these approximations into the ODE, we obtain a method to get
+% |y[n+1]| from the previous two steps |y[n]| and |y[n-1]|.
+%
+% The method for approximating solutions is:
+%
+% 1. Start with |y[0]=y0|
+%
+% 2. Then we need to get |y[1]|, but we can't use the method, because we
+% don't have two iterations |y[0]| and |y[-1]|(!!). So we use Euler to get
+%
+%  y[1] = y0 + y1 h
+%
+% y1 is the slope given by the initial condition
+%
+% 3. Use the method described above to get |y[n]| for |n=2,3,...|.
+
+%% Exercise 6
+%
+% Objective: Write your own second-order ODE solver.
+%
+% Details: Consider the second-order ODE
+%
+%  y'' + p(t) y' + q(t) y = g(t)
+% 
+% Write a second-order ODE solver using the method described above.
+% 
+% This m-file should be a function which accepts as variables 
+% (t0,tN,y0,y1,h), where t0 and tN are the start and end points of the 
+% interval on which to solve the ODE, y0, y1 are the initial conditions of
+% the ODE, and h is the stepsize.  You may also want to pass the functions 
+% into the ODE the way |ode45| does (check MATLAB lab 2). Name the function
+% DE2_<UTORid>.m.
+%
+% Note: you will need to use a loop to do this exercise.  
+
+%% Exercise 7
+%
+% Objective: Compare your method with |iode|
+%
+% Details: Use |iode| to plot the solution of the ODE 
+% |y'' + exp(-t/5) y' + (1-exp(-t/5)) y = sin(2*t)|
+% with the initial conditions 
+% |y(0)  = 1, y'(0) = 0|
+%
+% Use the window to |[0,20]x[-2,2]|
+% Without removing the figure window, plot your solution (in a different colour), 
+% which will be plotted in the same graph. 
+%
+% Comment on any major differences, or the lack thereof.
+%
+%
+% <<ex7_boyadj11.png>>
+
+% Below is the code used to plot the DE2 solver on the iode graph. This was
+% entered in the command window to plot on the same graph 
+
+% inline function 
+f = @(t, y, dy) - exp(-t/5)*dy - (1-exp(-t/5))*y + sin(2*t);
+
+% numerical solution using DE2_boyadj11 solver
+[t, y] = DE2_boyadj11(f, 0, 20, 1, 0, 0.01);
+
+% plotting on iode plot
+plot(t, y);
+title('Exercise 7');
+xlabel('t');
+ylabel('y');
+legend('Numerical Solution Using DE2 boyadj11', 'location', 'best');
+
+% The DE2 solver is nearly identical to the iode solver except that  
+% it is a little shifted to the right 
+%
+##### SOURCE END #####
+--></body></html>

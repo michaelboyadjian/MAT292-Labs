@@ -1,0 +1,943 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Laplace Transform Lab: Solving ODEs using Laplace Transform in MATLAB</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-12-04"><meta name="DC.source" content="lab6_boyadj11.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Laplace Transform Lab: Solving ODEs using Laplace Transform in MATLAB</h1><!--introduction--><p>This lab will teach you to solve ODEs using a built in MATLAB Laplace transform function <tt>laplace</tt>. Also in this lab, you will write your own ODE solver using Laplace transforms and check whether the result yields the correct answer.</p><p>You will learn how to use the <tt>laplace</tt> routine.</p><p>There are five (5) exercises in this lab that are to be handed in. Write your solutions in the template, including appropriate descriptions in each step. Save the m-file and submit it on Quercus.</p><p>Include your name and student number in the submitted file.</p><p>MAT292, Fall 2019, Stinchcombe &amp; Parsch, modified from MAT292, Fall 2018, Stinchcombe &amp; Khovanskii, modified from MAT292, Fall 2017, Stinchcombe &amp; Sinnamon, modified from MAT292, Fall 2015, Sousa, based on MAT292, Fall 2013, Sinnamon &amp; Sousa</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Student Information</a></li><li><a href="#2">Using symbolic variables to define functions</a></li><li><a href="#3">Laplace transform and its inverse</a></li><li><a href="#11">Exercise 1</a></li><li><a href="#12">Heaviside and Dirac functions</a></li><li><a href="#13">Exercise 2</a></li><li><a href="#14">Solving IVPs using Laplace transforms</a></li><li><a href="#15">Exercise 3</a></li><li><a href="#16">Exercise 4</a></li><li><a href="#17">Exercise 5a</a></li><li><a href="#18">Exercise 5b</a></li></ul></div><h2 id="1">Student Information</h2><pre>Student Name: Michael Boyadjian</pre><pre>Student Number: 1005109142</pre><h2 id="2">Using symbolic variables to define functions</h2><p>Recall the use of symbolic variables and function explained in the MATLAB assignment #2.</p><pre class="codeinput">syms <span class="string">t</span> <span class="string">s</span> <span class="string">x</span> <span class="string">y</span>
+
+f = cos(t)
+h = exp(2*x)
+</pre><pre class="codeoutput"> 
+f =
+ 
+cos(t)
+ 
+ 
+h =
+ 
+exp(2*x)
+ 
+</pre><h2 id="3">Laplace transform and its inverse</h2><pre class="codeinput"><span class="comment">% The routine |laplace| computes the Laplace transform of a function</span>
+
+F=laplace(f)
+</pre><pre class="codeoutput"> 
+F =
+ 
+s/(s^2 + 1)
+ 
+</pre><p>By default it uses the variable <tt>s</tt> for the Laplace transform But we can specify which variable we want:</p><pre class="codeinput">H=laplace(h)
+laplace(h,y)
+
+<span class="comment">% Observe that the results are identical: one in the variable |s| and the</span>
+<span class="comment">% other in the variable |y|</span>
+</pre><pre class="codeoutput"> 
+H =
+ 
+1/(s - 2)
+ 
+ 
+ans =
+ 
+1/(y - 2)
+ 
+</pre><p>We can also specify which variable to use to compute the Laplace transform:</p><pre class="codeinput">j = exp(x*t)
+laplace(j)
+laplace(j,x,s)
+
+<span class="comment">% By default, MATLAB assumes that the Laplace transform is to be computed</span>
+<span class="comment">% using the variable |t|, unless we specify that we should use the variable</span>
+<span class="comment">% |x|</span>
+</pre><pre class="codeoutput"> 
+j =
+ 
+exp(t*x)
+ 
+ 
+ans =
+ 
+1/(s - x)
+ 
+ 
+ans =
+ 
+1/(s - t)
+ 
+</pre><p>We can also use inline functions with <tt>laplace</tt>. When using inline functions, we always have to specify the variable of the function.</p><pre class="codeinput">l = @(t) t^2+t+1
+laplace(l(t))
+</pre><pre class="codeoutput">
+l =
+
+  function_handle with value:
+
+    @(t)t^2+t+1
+
+ 
+ans =
+ 
+(s + 1)/s^2 + 2/s^3
+ 
+</pre><p>MATLAB also has the routine <tt>ilaplace</tt> to compute the inverse Laplace transform</p><pre class="codeinput">ilaplace(F)
+ilaplace(H)
+ilaplace(laplace(f))
+</pre><pre class="codeoutput"> 
+ans =
+ 
+cos(t)
+ 
+ 
+ans =
+ 
+exp(2*t)
+ 
+ 
+ans =
+ 
+cos(t)
+ 
+</pre><p>If <tt>laplace</tt> cannot compute the Laplace transform, it returns an unevaluated call.</p><pre class="codeinput">g = 1/sqrt(t^2+1)
+G = laplace(g)
+</pre><pre class="codeoutput"> 
+g =
+ 
+1/(t^2 + 1)^(1/2)
+ 
+ 
+G =
+ 
+laplace(1/(t^2 + 1)^(1/2), t, s)
+ 
+</pre><p>But MATLAB "knows" that it is supposed to be a Laplace transform of a function. So if we compute the inverse Laplace transform, we obtain the original function</p><pre class="codeinput">ilaplace(G)
+</pre><pre class="codeoutput"> 
+ans =
+ 
+1/(t^2 + 1)^(1/2)
+ 
+</pre><p>The Laplace transform of a function is related to the Laplace transform of its derivative:</p><pre class="codeinput">syms <span class="string">g(t)</span>
+laplace(diff(g,t),t,s)
+</pre><pre class="codeoutput"> 
+ans =
+ 
+s*laplace(g(t), t, s) - g(0)
+ 
+</pre><h2 id="11">Exercise 1</h2><p>Objective: Compute the Laplace transform and use it to show that MATLAB 'knows' some of its properties.</p><p>Details:</p><p>(a) Define the function <tt>f(t)=exp(2t)*t^3</tt>, and compute its Laplace   transform <tt>F(s)</tt>. (b) Find a function <tt>f(t)</tt> such that its Laplace transform is   <tt>(s - 1)*(s - 2))/(s*(s + 2)*(s - 3)</tt> (c) Show that MATLAB 'knows' that if <tt>F(s)</tt> is the Laplace transform of   <tt>f(t)</tt>, then the Laplace transform of <tt>exp(at)f(t)</tt> is <tt>F(s-a)</tt></p><p>(in your answer, explain part (c) using comments).</p><p>Observe that MATLAB splits the rational function automatically when solving the inverse Laplace transform.</p><pre class="codeinput">close <span class="string">all</span>; clear; clc;
+
+syms <span class="string">t</span> <span class="string">s</span> <span class="string">x</span>
+
+<span class="comment">% a)</span>
+
+f = @(t) exp(2*t)*t^3;
+F = laplace(f(t));
+disp(F)
+
+<span class="comment">% b)</span>
+
+G = @(s) ((s-1)*(s-2))/(s*(s+2)*(s-3));
+g = ilaplace(G(s));
+disp(g)
+
+<span class="comment">% c)</span>
+
+syms <span class="string">a</span> <span class="string">f(t)</span>
+F1 = laplace(f(t));
+F2 = laplace(exp(a*t) * f(t));
+disp(F1)
+disp(F2)
+
+<span class="comment">% As shown from the outputs generated with the above code, MATLAB evaluates</span>
+<span class="comment">% the laplace tranform of f(t) to be F(s) and the laplace transform of</span>
+<span class="comment">% exp(a*t) * f(t) to be F(s-a)</span>
+</pre><pre class="codeoutput">6/(s - 2)^4
+ 
+(6*exp(-2*t))/5 + (2*exp(3*t))/15 - 1/3
+ 
+laplace(f(t), t, s)
+ 
+laplace(f(t), t, s - a)
+ 
+</pre><h2 id="12">Heaviside and Dirac functions</h2><p>These two functions are builtin to MATLAB: <tt>heaviside</tt> is the Heaviside function <tt>u_0(t)</tt> at <tt>0</tt></p><p>To define <tt>u_2(t)</tt>, we need to write</p><pre class="codeinput">f=heaviside(t-2);
+ezplot(f,[-1,5]);
+
+<span class="comment">% The Dirac delta function (at |0|) is also defined with the routine |dirac|</span>
+
+g = dirac(t-3);
+
+<span class="comment">% MATLAB "knows" how to compute the Laplace transform of these functions</span>
+
+laplace(f)
+laplace(g)
+</pre><pre class="codeoutput"> 
+ans =
+ 
+exp(-2*s)/s
+ 
+ 
+ans =
+ 
+exp(-3*s)
+ 
+</pre><img vspace="5" hspace="5" src="lab6_boyadj11_01.png" alt=""> <h2 id="13">Exercise 2</h2><p>Objective: Find a formula comparing the Laplace transform of a   translation of <tt>f(t)</tt> by <tt>t-a</tt> with the Laplace transform of <tt>f(t)</tt></p><p>Details:</p><div><ul><li>Give a value to <tt>a</tt></li><li>Let <tt>G(s)</tt> be the Laplace transform of <tt>g(t)=u_a(t)f(t-a)</tt>   and <tt>F(s)</tt> is the Laplace transform of <tt>f(t)</tt>, then find a   formula relating <tt>G(s)</tt> and <tt>F(s)</tt></li></ul></div><p>In your answer, explain the 'proof' using comments.</p><pre class="codeinput">syms <span class="string">t</span> <span class="string">f</span> <span class="string">g</span> <span class="string">F</span> <span class="string">G</span>;
+
+<span class="comment">% Using an a value of 3 and f(t) = t^2</span>
+a = 3;
+f = t^2;
+
+<span class="comment">% Laplace of f</span>
+F = laplace(f);
+
+<span class="comment">% g = f(t-a)</span>
+g = f;
+g = simplify(subs(g, t, t-a));
+
+<span class="comment">% laplace transform of u(t-a) * g</span>
+G = laplace(heaviside(t - a) * g);
+
+disp(F)
+disp(G)
+
+<span class="comment">% The outputs show that G is just e^(-3s)*F, where 3 is in fact the a value</span>
+<span class="comment">% we assigned. This means that G = e^(-as)*F, which proves to us that the</span>
+<span class="comment">% laplace transmorm of u(t-a)*f(t-a) is equal to the laplace transform</span>
+<span class="comment">% of f(t) multiplied by e^(-as)</span>
+</pre><pre class="codeoutput">2/s^3
+ 
+(2*exp(-3*s))/s^3
+ 
+</pre><h2 id="14">Solving IVPs using Laplace transforms</h2><p>Consider the following IVP, <tt>y''-3y = 5t</tt> with the initial conditions <tt>y(0)=1</tt> and <tt>y'(0)=2</tt>. We can use MATLAB to solve this problem using Laplace transforms:</p><pre class="codeinput"><span class="comment">% First we define the unknown function and its variable and the Laplace</span>
+<span class="comment">% tranform of the unknown</span>
+
+syms <span class="string">y(t)</span> <span class="string">t</span> <span class="string">Y</span> <span class="string">s</span>
+
+<span class="comment">% Then we define the ODE</span>
+
+ODE=diff(y(t),t,2)-3*y(t)-5*t == 0
+
+<span class="comment">% Now we compute the Laplace transform of the ODE.</span>
+
+L_ODE = laplace(ODE)
+
+<span class="comment">% Use the initial conditions</span>
+
+L_ODE=subs(L_ODE,y(0),1)
+L_ODE=subs(L_ODE,subs(diff(y(t), t), t, 0),2)
+
+<span class="comment">% We then need to factor out the Laplace transform of |y(t)|</span>
+
+L_ODE = subs(L_ODE,laplace(y(t), t, s), Y)
+Y=solve(L_ODE,Y)
+
+<span class="comment">% We now need to use the inverse Laplace transform to obtain the solution</span>
+<span class="comment">% to the original IVP</span>
+
+y = ilaplace(Y)
+
+<span class="comment">% We can plot the solution</span>
+
+ezplot(y,[0,20])
+
+<span class="comment">% We can check that this is indeed the solution</span>
+
+diff(y,t,2)-3*y
+</pre><pre class="codeoutput"> 
+ODE =
+ 
+diff(y(t), t, t) - 3*y(t) - 5*t == 0
+ 
+ 
+L_ODE =
+ 
+s^2*laplace(y(t), t, s) - s*y(0) - subs(diff(y(t), t), t, 0) - 5/s^2 - 3*laplace(y(t), t, s) == 0
+ 
+ 
+L_ODE =
+ 
+s^2*laplace(y(t), t, s) - s - subs(diff(y(t), t), t, 0) - 5/s^2 - 3*laplace(y(t), t, s) == 0
+ 
+ 
+L_ODE =
+ 
+s^2*laplace(y(t), t, s) - s - 5/s^2 - 3*laplace(y(t), t, s) - 2 == 0
+ 
+ 
+L_ODE =
+ 
+Y*s^2 - s - 3*Y - 5/s^2 - 2 == 0
+ 
+ 
+Y =
+ 
+(s + 5/s^2 + 2)/(s^2 - 3)
+ 
+ 
+y =
+ 
+cosh(3^(1/2)*t) - (5*t)/3 + (11*3^(1/2)*sinh(3^(1/2)*t))/9
+ 
+ 
+ans =
+ 
+5*t
+ 
+</pre><h2 id="15">Exercise 3</h2><p>Objective: Solve an IVP using the Laplace transform</p><p>Details: Explain your steps using comments</p><div><ul><li>Solve the IVP</li><li><tt>y'''+2y''+y'+2*y=-cos(t)</tt></li><li><tt>y(0)=0</tt>, <tt>y'(0)=0</tt>, and <tt>y''(0)=0</tt></li><li>for <tt>t</tt> in <tt>[0,10*pi]</tt></li><li>Is there an initial condition for which <tt>y</tt> remains bounded as <tt>t</tt> goes to infinity? If so, find it.</li></ul></div><pre class="codeinput">syms <span class="string">y(t)</span> <span class="string">t</span> <span class="string">Y</span> <span class="string">s</span>
+
+<span class="comment">% Define differentiated terms in ODE</span>
+yprime3 = diff(y(t), t, 3);
+yprime2 = diff(y(t), t, 2);
+yprime1 = diff(y(t), t, 1);
+
+<span class="comment">% Define ODE</span>
+ODE = yprime3 + 2*yprime2 + yprime1 + 2*y(t) == -cos(t);
+
+<span class="comment">% Initial conditions</span>
+y0 = 0;
+yprime1_0 = 0;
+yprime2_0 = 0;
+
+<span class="comment">% Finding laplace transform using the initial conditions</span>
+L_ODE = laplace(ODE);
+L_ODE = subs(L_ODE, y(0), y0);
+L_ODE = subs(L_ODE, subs(yprime1, t, 0), yprime1_0);
+L_ODE = subs(L_ODE, subs(yprime2, t, 0), yprime2_0);
+
+<span class="comment">% Factor out Y</span>
+L_ODE = subs(L_ODE, laplace(y(t), t, s), Y);
+Y = solve(L_ODE, Y);
+
+<span class="comment">% Solve the ODE using the laplace inverse</span>
+y = ilaplace(Y);
+
+<span class="comment">% Plotting the solution</span>
+ezplot(y, [0, 10*pi])
+
+<span class="comment">% There is no initial condition that is able to bound y. The solution will</span>
+<span class="comment">% always diverge to infinity. The general solution: y = Aexp(-2t) + Bsin(t)</span>
+<span class="comment">% + Ccos(t) - 1/5tsin(t) + 1/10tcos(t) shows us that regardless of the</span>
+<span class="comment">% constants, it will always diverge</span>
+</pre><img vspace="5" hspace="5" src="lab6_boyadj11_02.png" alt=""> <h2 id="16">Exercise 4</h2><p>Objective: Solve an IVP using the Laplace transform</p><p>Details:</p><div><ul><li>Define</li><li><tt>g(t) = 3 if 0 &lt; t &lt; 2</tt></li><li><tt>g(t) = t+1 if 2 &lt; t &lt; 5</tt></li><li><tt>g(t) = 5 if t &gt; 5</tt></li></ul></div><div><ul><li>Solve the IVP</li><li><tt>y''+2y'+5y=g(t)</tt></li><li><tt>y(0)=2 and y'(0)=1</tt></li></ul></div><div><ul><li>Plot the solution for <tt>t</tt> in <tt>[0,12]</tt> and <tt>y</tt> in <tt>[0,2.25]</tt>.</li></ul></div><p>In your answer, explain your steps using comments.</p><pre class="codeinput">syms <span class="string">y(t)</span> <span class="string">t</span> <span class="string">Y</span> <span class="string">s</span>
+
+<span class="comment">% Inline function - g(t) simplified using heaviside function</span>
+g = @(t) 3*heaviside(t) + (t-2) * heaviside(t-2) + (-t+4) * heaviside(t-5);
+
+<span class="comment">% Define differentiated terms in ODE</span>
+yprime2 = diff(y(t), t, 2);
+yprime1 = diff(y(t), t, 1);
+
+<span class="comment">% Define ODE</span>
+ODE = yprime2 + 2 * yprime1 + 5 * y(t) == g(t);
+
+<span class="comment">% Initial conditions</span>
+y0 = 2;
+yprime1_0 = 1;
+
+<span class="comment">% Finding laplace transform using the initial conditions</span>
+L_ODE = laplace(ODE);
+L_ODE = subs(L_ODE, y(0), y0);
+L_ODE = subs(L_ODE, subs(yprime1, t, 0), yprime1_0);
+
+<span class="comment">% Factoring out Y</span>
+L_ODE = subs(L_ODE, laplace(y(t), t, s), Y);
+Y = solve(L_ODE, Y);
+
+<span class="comment">% Solve the ODE using the laplace inverse</span>
+y = ilaplace(Y);
+
+<span class="comment">% Plot solution</span>
+ezplot(y, [0, 12, 0, 2.25]);
+</pre><img vspace="5" hspace="5" src="lab6_boyadj11_03.png" alt=""> <h2 id="17">Exercise 5a</h2><p>Objective: Use the Laplace transform to solve an integral equation</p><p>Verify that MATLAB knowns about the convolution theorem by explaining why the following transform is computed correctly.</p><pre class="codeinput">syms <span class="string">t</span> <span class="string">tau</span> <span class="string">y(tau)</span> <span class="string">s</span>
+I=int(exp(-2*(t-tau))*y(tau),tau,0,t)
+laplace(I,t,s)
+
+<span class="comment">% The laplace transform of f*y = int(f(t-tau)y(tau)dtau) from 0 to t is</span>
+<span class="comment">% F(s)*Y(s). In this case f(t) is e^(-2t) and its laplace transform is a</span>
+<span class="comment">% 1/(s+2). The MATLAB output was laplace(y) / s+2, which is in fact</span>
+<span class="comment">% F(s)*Y(s) as expected</span>
+</pre><pre class="codeoutput"> 
+I =
+ 
+int(exp(2*tau - 2*t)*y(tau), tau, 0, t)
+ 
+ 
+ans =
+ 
+laplace(y(t), t, s)/(s + 2)
+ 
+</pre><h2 id="18">Exercise 5b</h2><p>A particular machine in a factory fails randomly and needs to be replaced. Suppose that the times <tt>t&gt;=0</tt> between failures are independent and identically distributed with probability density function <tt>f(t)</tt>. The mean number of failures <tt>m(t)</tt> at time <tt>t</tt> satisfies the renewal equation <tt>m(t) = \int_0^t [1+m(t-tau)] f(tau) dtau</tt></p><p>Details:</p><div><ul><li>Explain why the mean number of failures satisfies this intergal equation. Note that <tt>m(0)=0</tt>.</li><li>Solve the renewal equation for <tt>m(t)</tt> using MATLAB symbolic computation in the cases of i) exponential failure times <tt>f(t) = exp(-t)</tt> and ii) gamma-distributed failure times <tt>f(t) = t^k/(k-1)! exp(-t)</tt> for natural number <tt>k</tt>. Why does MATLAB have difficulty with the calculation for <tt>k&gt;=5</tt>?</li><li>Verify the elementary renewal theorem: <tt>m(t)/t</tt> approaches the reciprocal of the mean of <tt>f(t)</tt> as <tt>t</tt> goes to infinity.</li></ul></div><pre class="codeinput"><span class="comment">% Since there are no failures prior to t=0, we have the initial condition</span>
+<span class="comment">% of m(0)=0. m(t) = \int_{0}^{T} x f(tau) dtau, where f(tau) is the</span>
+<span class="comment">% probability density function. Thus, m(T) gives us the expected values of</span>
+<span class="comment">% failures and x is the number of failures between tau and T. The expected</span>
+<span class="comment">% number of failures in this interval [tau, T] is m(T-tau), but a failure</span>
+<span class="comment">% occurs at t = tau, so the number of failures becomes m(T-tau)+1.</span>
+<span class="comment">% Therefore, m(T) = \int_{0}^{T} [m(T-tau)+1]*[f(tau)] dtau</span>
+
+
+syms <span class="string">f(t)</span> <span class="string">m1(t)</span> <span class="string">m2(t)</span> <span class="string">t</span> <span class="string">tau</span> <span class="string">M1</span> <span class="string">M2</span>
+
+<span class="comment">% i) For exponential failure</span>
+f = exp(-t);
+
+<span class="comment">% Define renewal equation and take laplace transform</span>
+r = m1(t) - int((m1(t - tau) + 1) * subs(f, t, tau), tau, 0, t) == 0;
+R = laplace(r);
+
+<span class="comment">% Substituting and solve for M</span>
+R = subs(R, laplace(m1), M1);
+M1 = solve(R, M1);
+
+<span class="comment">% Use laplace inverse to extract m</span>
+m1 = ilaplace(M1)
+
+<span class="comment">% Verify renewal theorem by finding avg. as t -&gt; infinity</span>
+average = eval(int(t * f, t, 0, inf));
+
+<span class="comment">% According to the theorem, the result should be 1; this correctly checks out</span>
+res = subs(m1 / t, t, inf) * average
+
+<span class="comment">% m(t) = t, so m(t)/t = 1</span>
+
+
+<span class="comment">% ii) Gamma Distribution for the case k=5</span>
+k = 5;
+f = t^(k-1)/factorial(k-1) * exp(-t);
+
+<span class="comment">% Same steps as before but now with Gamma distrubution</span>
+r = m2(t) == int((m2(t - tau) + 1) * subs(f, t, tau), tau, 0, t);
+R = simplify(laplace(r));
+R = simplify(subs(R, laplace(m2), M2));
+M2 = simplify(solve(R, M2));
+m2 = vpa(ilaplace(M2))
+
+<span class="comment">% Verify renewal theorem by finding avg. as t -&gt; infinity</span>
+average = eval(int(t * f, t, 0, inf));
+
+<span class="comment">% According to the theorem, the result should be 1; this correctly checks out</span>
+<span class="comment">% Note: instead of infinity 1e100 was used here</span>
+res = subs(m2 / t, t, 1e100) * average
+
+<span class="comment">% When k&gt;=5, the computation becomes much slower, so it becomes much more</span>
+<span class="comment">% difficult for the calculations. The solution of this problem involves</span>
+<span class="comment">% using partial fractions for the laplace inverse. As k increases, the</span>
+<span class="comment">% order of the denominator increases as well, so it becomes costly time</span>
+<span class="comment">% wise for MATLAB.</span>
+</pre><pre class="codeoutput"> 
+m1 =
+ 
+t
+ 
+ 
+res =
+ 
+1
+ 
+ 
+m2 =
+ 
+0.2*t + exp(-1.8090169943749474241022934171828*t)*cos(0.58778525229247312916870595463907*t)*(0.1 + 0.032491969623290632615587141221513i) + exp(-1.8090169943749474241022934171828*t)*cos(0.58778525229247312916870595463907*t)*(0.1 - 0.032491969623290632615587141221513i) + exp(-1.8090169943749474241022934171828*t)*sin(0.58778525229247312916870595463907*t)*(0.032491969623290632615587141221513 - 0.1i) + exp(-1.8090169943749474241022934171828*t)*sin(0.58778525229247312916870595463907*t)*(0.032491969623290632615587141221513 + 0.1i) + exp(-0.69098300562505257589770658281718*t)*cos(0.95105651629515357211643933337938*t)*(0.1 + 0.13763819204711735382072095819109i) + exp(-0.69098300562505257589770658281718*t)*cos(0.95105651629515357211643933337938*t)*(0.1 - 0.13763819204711735382072095819109i) + exp(-0.69098300562505257589770658281718*t)*sin(0.95105651629515357211643933337938*t)*(0.13763819204711735382072095819109 - 0.1i) + exp(-0.69098300562505257589770658281718*t)*sin(0.95105651629515357211643933337938*t)*(0.13763819204711735382072095819109 + 0.1i) - 0.4
+ 
+ 
+res =
+ 
+1.0
+ 
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Laplace Transform Lab: Solving ODEs using Laplace Transform in MATLAB
+%
+% This lab will teach you to solve ODEs using a built in MATLAB Laplace 
+% transform function |laplace|. Also in this lab, you will write your own
+% ODE solver using Laplace transforms and check whether the result yields
+% the correct answer.
+%
+% You will learn how to use the |laplace| routine. 
+% 
+% There are five (5) exercises in this lab that are to be handed in.  
+% Write your solutions in the template, including appropriate descriptions 
+% in each step. Save the m-file and submit it on Quercus.
+%
+% Include your name and student number in the submitted file.
+%
+% MAT292, Fall 2019, Stinchcombe & Parsch, modified from
+% MAT292, Fall 2018, Stinchcombe & Khovanskii, modified from
+% MAT292, Fall 2017, Stinchcombe & Sinnamon, modified from
+% MAT292, Fall 2015, Sousa, based on 
+% MAT292, Fall 2013, Sinnamon & Sousa
+
+%% Student Information
+%
+%  Student Name: Michael Boyadjian
+%
+%  Student Number: 1005109142
+%
+%% Using symbolic variables to define functions
+% 
+% Recall the use of symbolic variables and function explained in the MATLAB
+% assignment #2.
+
+syms t s x y
+
+f = cos(t)
+h = exp(2*x)
+
+
+%% Laplace transform and its inverse
+
+% The routine |laplace| computes the Laplace transform of a function
+
+F=laplace(f)
+
+%%
+% By default it uses the variable |s| for the Laplace transform
+% But we can specify which variable we want:
+
+H=laplace(h)
+laplace(h,y)
+
+% Observe that the results are identical: one in the variable |s| and the
+% other in the variable |y|
+
+%% 
+% We can also specify which variable to use to compute the Laplace
+% transform:
+
+j = exp(x*t)
+laplace(j)
+laplace(j,x,s)
+
+% By default, MATLAB assumes that the Laplace transform is to be computed
+% using the variable |t|, unless we specify that we should use the variable
+% |x|
+
+%% 
+% We can also use inline functions with |laplace|. When using inline
+% functions, we always have to specify the variable of the function.
+
+l = @(t) t^2+t+1
+laplace(l(t))
+
+%% 
+% MATLAB also has the routine |ilaplace| to compute the inverse Laplace
+% transform
+
+ilaplace(F)
+ilaplace(H)
+ilaplace(laplace(f))
+
+%% 
+% If |laplace| cannot compute the Laplace transform, it returns an
+% unevaluated call.
+
+g = 1/sqrt(t^2+1)
+G = laplace(g)
+
+%% 
+% But MATLAB "knows" that it is supposed to be a Laplace transform of a
+% function. So if we compute the inverse Laplace transform, we obtain the
+% original function
+
+ilaplace(G)
+
+%%
+% The Laplace transform of a function is related to the Laplace transform 
+% of its derivative:
+
+syms g(t)
+laplace(diff(g,t),t,s)
+
+
+%% Exercise 1
+%
+% Objective: Compute the Laplace transform and use it to show that MATLAB
+% 'knows' some of its properties.
+%
+% Details:  
+%
+% (a) Define the function |f(t)=exp(2t)*t^3|, and compute its Laplace
+%   transform |F(s)|.
+% (b) Find a function |f(t)| such that its Laplace transform is
+%   |(s - 1)*(s - 2))/(s*(s + 2)*(s - 3)|
+% (c) Show that MATLAB 'knows' that if |F(s)| is the Laplace transform of
+%   |f(t)|, then the Laplace transform of |exp(at)f(t)| is |F(s-a)| 
+% 
+% (in your answer, explain part (c) using comments).      
+%
+% Observe that MATLAB splits the rational function automatically when
+% solving the inverse Laplace transform.
+
+close all; clear; clc; 
+
+syms t s x
+
+% a)
+
+f = @(t) exp(2*t)*t^3;
+F = laplace(f(t));
+disp(F)
+
+% b)
+
+G = @(s) ((s-1)*(s-2))/(s*(s+2)*(s-3));
+g = ilaplace(G(s));
+disp(g)
+
+% c) 
+
+syms a f(t)
+F1 = laplace(f(t));
+F2 = laplace(exp(a*t) * f(t));
+disp(F1)
+disp(F2)
+
+% As shown from the outputs generated with the above code, MATLAB evaluates
+% the laplace tranform of f(t) to be F(s) and the laplace transform of
+% exp(a*t) * f(t) to be F(s-a)
+
+%% Heaviside and Dirac functions
+%
+% These two functions are builtin to MATLAB: |heaviside| is the Heaviside
+% function |u_0(t)| at |0|
+%
+% To define |u_2(t)|, we need to write
+
+f=heaviside(t-2);
+ezplot(f,[-1,5]);
+
+% The Dirac delta function (at |0|) is also defined with the routine |dirac|
+
+g = dirac(t-3);
+
+% MATLAB "knows" how to compute the Laplace transform of these functions
+
+laplace(f)
+laplace(g)
+
+
+%% Exercise 2
+%
+% Objective: Find a formula comparing the Laplace transform of a 
+%   translation of |f(t)| by |t-a| with the Laplace transform of |f(t)|
+%
+% Details:  
+%
+% * Give a value to |a|
+% * Let |G(s)| be the Laplace transform of |g(t)=u_a(t)f(t-a)| 
+%   and |F(s)| is the Laplace transform of |f(t)|, then find a 
+%   formula relating |G(s)| and |F(s)|
+%
+% In your answer, explain the 'proof' using comments.
+
+syms t f g F G;
+
+% Using an a value of 3 and f(t) = t^2
+a = 3;
+f = t^2;
+
+% Laplace of f
+F = laplace(f);
+
+% g = f(t-a)
+g = f;
+g = simplify(subs(g, t, t-a));
+
+% laplace transform of u(t-a) * g
+G = laplace(heaviside(t - a) * g);
+
+disp(F)
+disp(G)
+
+% The outputs show that G is just e^(-3s)*F, where 3 is in fact the a value
+% we assigned. This means that G = e^(-as)*F, which proves to us that the 
+% laplace transmorm of u(t-a)*f(t-a) is equal to the laplace transform 
+% of f(t) multiplied by e^(-as)
+
+%% Solving IVPs using Laplace transforms
+%
+% Consider the following IVP, |y''-3y = 5t| with the initial
+% conditions |y(0)=1| and |y'(0)=2|.
+% We can use MATLAB to solve this problem using Laplace transforms:
+
+% First we define the unknown function and its variable and the Laplace
+% tranform of the unknown
+
+syms y(t) t Y s
+
+% Then we define the ODE
+
+ODE=diff(y(t),t,2)-3*y(t)-5*t == 0
+
+% Now we compute the Laplace transform of the ODE.
+
+L_ODE = laplace(ODE)
+
+% Use the initial conditions
+
+L_ODE=subs(L_ODE,y(0),1)
+L_ODE=subs(L_ODE,subs(diff(y(t), t), t, 0),2)
+
+% We then need to factor out the Laplace transform of |y(t)|
+
+L_ODE = subs(L_ODE,laplace(y(t), t, s), Y)
+Y=solve(L_ODE,Y)
+
+% We now need to use the inverse Laplace transform to obtain the solution
+% to the original IVP
+
+y = ilaplace(Y)
+
+% We can plot the solution
+
+ezplot(y,[0,20])
+
+% We can check that this is indeed the solution
+
+diff(y,t,2)-3*y
+
+
+%% Exercise 3
+%
+% Objective: Solve an IVP using the Laplace transform
+%
+% Details: Explain your steps using comments
+%
+%
+% * Solve the IVP
+% *   |y'''+2y''+y'+2*y=-cos(t)|
+% *   |y(0)=0|, |y'(0)=0|, and |y''(0)=0|
+% * for |t| in |[0,10*pi]|
+% * Is there an initial condition for which |y| remains bounded as |t| goes to infinity? If so, find it.
+
+syms y(t) t Y s
+
+% Define differentiated terms in ODE
+yprime3 = diff(y(t), t, 3);
+yprime2 = diff(y(t), t, 2);
+yprime1 = diff(y(t), t, 1);
+
+% Define ODE
+ODE = yprime3 + 2*yprime2 + yprime1 + 2*y(t) == -cos(t);
+
+% Initial conditions
+y0 = 0;
+yprime1_0 = 0;
+yprime2_0 = 0;
+
+% Finding laplace transform using the initial conditions
+L_ODE = laplace(ODE);
+L_ODE = subs(L_ODE, y(0), y0);
+L_ODE = subs(L_ODE, subs(yprime1, t, 0), yprime1_0);
+L_ODE = subs(L_ODE, subs(yprime2, t, 0), yprime2_0);
+
+% Factor out Y
+L_ODE = subs(L_ODE, laplace(y(t), t, s), Y);
+Y = solve(L_ODE, Y);
+
+% Solve the ODE using the laplace inverse
+y = ilaplace(Y);
+
+% Plotting the solution
+ezplot(y, [0, 10*pi])
+
+% There is no initial condition that is able to bound y. The solution will
+% always diverge to infinity. The general solution: y = Aexp(-2t) + Bsin(t)
+% + Ccos(t) - 1/5tsin(t) + 1/10tcos(t) shows us that regardless of the
+% constants, it will always diverge
+%% Exercise 4
+%
+% Objective: Solve an IVP using the Laplace transform
+%
+% Details:  
+% 
+% * Define 
+% *   |g(t) = 3 if 0 < t < 2|
+% *   |g(t) = t+1 if 2 < t < 5|
+% *   |g(t) = 5 if t > 5|
+%
+% * Solve the IVP
+% *   |y''+2y'+5y=g(t)|
+% *   |y(0)=2 and y'(0)=1|
+%
+% * Plot the solution for |t| in |[0,12]| and |y| in |[0,2.25]|.
+%
+% In your answer, explain your steps using comments.
+
+syms y(t) t Y s
+
+% Inline function - g(t) simplified using heaviside function
+g = @(t) 3*heaviside(t) + (t-2) * heaviside(t-2) + (-t+4) * heaviside(t-5);
+
+% Define differentiated terms in ODE
+yprime2 = diff(y(t), t, 2);
+yprime1 = diff(y(t), t, 1);
+
+% Define ODE
+ODE = yprime2 + 2 * yprime1 + 5 * y(t) == g(t);
+
+% Initial conditions
+y0 = 2;
+yprime1_0 = 1;
+
+% Finding laplace transform using the initial conditions
+L_ODE = laplace(ODE);
+L_ODE = subs(L_ODE, y(0), y0);
+L_ODE = subs(L_ODE, subs(yprime1, t, 0), yprime1_0);
+
+% Factoring out Y
+L_ODE = subs(L_ODE, laplace(y(t), t, s), Y);
+Y = solve(L_ODE, Y);
+
+% Solve the ODE using the laplace inverse
+y = ilaplace(Y);
+
+% Plot solution
+ezplot(y, [0, 12, 0, 2.25]);
+
+%% Exercise 5a
+%
+% Objective: Use the Laplace transform to solve an integral equation
+% 
+% Verify that MATLAB knowns about the convolution theorem by explaining why the following transform is computed correctly.
+syms t tau y(tau) s
+I=int(exp(-2*(t-tau))*y(tau),tau,0,t)
+laplace(I,t,s)
+
+% The laplace transform of f*y = int(f(t-tau)y(tau)dtau) from 0 to t is
+% F(s)*Y(s). In this case f(t) is e^(-2t) and its laplace transform is a
+% 1/(s+2). The MATLAB output was laplace(y) / s+2, which is in fact
+% F(s)*Y(s) as expected
+
+%% Exercise 5b
+% A particular machine in a factory fails randomly and needs to be replaced. 
+% Suppose that the times |t>=0| between failures are independent and identically 
+% distributed with probability density function |f(t)|. The mean number of 
+% failures |m(t)| at time |t| satisfies the renewal equation 
+% |m(t) = \int_0^t [1+m(t-tau)] f(tau) dtau|
+%
+% Details:  
+%
+% * Explain why the mean number of failures satisfies this intergal equation. Note that |m(0)=0|.
+% * Solve the renewal equation for |m(t)| using MATLAB symbolic computation 
+% in the cases of i) exponential failure times |f(t) = exp(-t)| and ii) 
+% gamma-distributed failure times |f(t) = t^k/(k-1)! exp(-t)| for natural 
+% number |k|. Why does MATLAB have difficulty with the calculation for |k>=5|?
+% * Verify the elementary renewal theorem: |m(t)/t| approaches the reciprocal of the mean of |f(t)| as |t| goes to infinity. 
+
+% Since there are no failures prior to t=0, we have the initial condition
+% of m(0)=0. m(t) = \int_{0}^{T} x f(tau) dtau, where f(tau) is the
+% probability density function. Thus, m(T) gives us the expected values of
+% failures and x is the number of failures between tau and T. The expected
+% number of failures in this interval [tau, T] is m(T-tau), but a failure
+% occurs at t = tau, so the number of failures becomes m(T-tau)+1.
+% Therefore, m(T) = \int_{0}^{T} [m(T-tau)+1]*[f(tau)] dtau
+
+
+syms f(t) m1(t) m2(t) t tau M1 M2
+
+% i) For exponential failure
+f = exp(-t);
+
+% Define renewal equation and take laplace transform
+r = m1(t) - int((m1(t - tau) + 1) * subs(f, t, tau), tau, 0, t) == 0;
+R = laplace(r);
+
+% Substituting and solve for M
+R = subs(R, laplace(m1), M1);
+M1 = solve(R, M1);
+
+% Use laplace inverse to extract m
+m1 = ilaplace(M1)
+
+% Verify renewal theorem by finding avg. as t -> infinity
+average = eval(int(t * f, t, 0, inf));
+
+% According to the theorem, the result should be 1; this correctly checks out 
+res = subs(m1 / t, t, inf) * average
+
+% m(t) = t, so m(t)/t = 1
+
+
+% ii) Gamma Distribution for the case k=5
+k = 5;
+f = t^(k-1)/factorial(k-1) * exp(-t);
+
+% Same steps as before but now with Gamma distrubution
+r = m2(t) == int((m2(t - tau) + 1) * subs(f, t, tau), tau, 0, t);
+R = simplify(laplace(r));
+R = simplify(subs(R, laplace(m2), M2));
+M2 = simplify(solve(R, M2));
+m2 = vpa(ilaplace(M2))
+
+% Verify renewal theorem by finding avg. as t -> infinity
+average = eval(int(t * f, t, 0, inf));
+
+% According to the theorem, the result should be 1; this correctly checks out 
+% Note: instead of infinity 1e100 was used here
+res = subs(m2 / t, t, 1e100) * average
+
+% When k>=5, the computation becomes much slower, so it becomes much more
+% difficult for the calculations. The solution of this problem involves
+% using partial fractions for the laplace inverse. As k increases, the
+% order of the denominator increases as well, so it becomes costly time
+% wise for MATLAB.
+
+##### SOURCE END #####
+--></body></html>
